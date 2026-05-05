@@ -1,0 +1,34 @@
+name: Morning AI Briefing
+
+# This determines WHEN the script runs
+on:
+  schedule:
+    # This runs at 00:30 UTC every day, which is exactly 6:00 AM IST (Indian Standard Time)
+    - cron: '30 0 * * *'
+  
+  # This allows you to click a button to run it manually anytime
+  workflow_dispatch:
+
+jobs:
+  run-agent:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.10'
+
+    - name: Install dependencies
+      run: pip install -r requirements.txt
+
+    - name: Run AI Agent
+      # This passes your secret keys from Step 1 securely to the script!
+      env:
+        GROQ_API_KEY: ${{ secrets.GROQ_API_KEY }}
+        NEWS_API_KEY: ${{ secrets.NEWS_API_KEY }}
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+      run: python agent.py
